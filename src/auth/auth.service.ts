@@ -7,6 +7,10 @@ import { LoginDto } from './dto/login.dto';
 import { LoginResponse } from './interfaces/login-response.interfacee';
 import { LogoutDto } from './dto/logout.dto';
 import { LogoutResponse } from './interfaces/logout-response.interface';
+import { UpdateParticipantDto } from './dto/updateParticipant.dto';
+import { UpdateParticipantResponse } from './interfaces/updateParticipant.interface';
+import { GetParticipantResponse } from './interfaces/getParticipant-response.interface';
+import { GetParticipantDto } from './dto/getParticipant.dto';
 
 @Injectable()
 export class AuthService {
@@ -103,6 +107,64 @@ export class AuthService {
       }
       throw new HttpException(
         'Ocurrió un error al realizar la solicitud',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async updateParticipant(
+    data: UpdateParticipantDto,
+  ): Promise<UpdateParticipantResponse> {
+    try {
+      const response = await axios.post<UpdateParticipantResponse>(
+        `${this.apiUrl}/participants/update`,
+        {
+          api_key: this.apiKey,
+          campaign: this.campaign,
+          ...data,
+        },
+      );
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        throw new HttpException(
+          error.response.data.message || 'Error en la solicitud',
+          error.response.status || HttpStatus.BAD_REQUEST,
+        );
+      }
+      throw new HttpException(
+        'Error inesperado al realizar la solicitud',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getParticipant(
+    dto: GetParticipantDto,
+  ): Promise<GetParticipantResponse> {
+    try {
+      const response = await axios.get<GetParticipantResponse>(
+        `${this.apiUrl}/participants/info`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+          },
+          params: {
+            campaign: dto.campaign,
+            distinct_id: dto.distinct_id,
+          },
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        throw new HttpException(
+          error.response.data.message || 'Error en la solicitud',
+          error.response.status || HttpStatus.BAD_REQUEST,
+        );
+      }
+      throw new HttpException(
+        'Error inesperado al realizar la solicitud',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
