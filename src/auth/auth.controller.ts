@@ -11,6 +11,8 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { LoginResponse } from './interfaces/login-response.interfacee';
 import { LogoutResponse } from './interfaces/logout-response.interface';
+import { RegisterResponse } from './interfaces/register-response.interface';
+import { RegisterDto } from './dto/register.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -32,5 +34,10 @@ export class AuthController {
     }
 
     return this.authService.logout({ token });
+  }
+
+  @Post('register')
+  async register(@Body() registerDto: RegisterDto): Promise<RegisterResponse> {
+    return this.authService.register(registerDto);
   }
 }

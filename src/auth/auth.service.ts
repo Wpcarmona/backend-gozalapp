@@ -1,11 +1,12 @@
-// src/auth/auth.service.ts
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import axios from 'axios';
+import { ConfigService } from '@nestjs/config';
+import { RegisterDto } from './dto/register.dto';
+import { RegisterResponse } from './interfaces/register-response.interface';
 import { LoginDto } from './dto/login.dto';
 import { LoginResponse } from './interfaces/login-response.interfacee';
 import { LogoutDto } from './dto/logout.dto';
 import { LogoutResponse } from './interfaces/logout-response.interface';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +14,7 @@ export class AuthService {
   private readonly apiKey: string;
   private readonly campaign: string;
 
-  constructor(private configService: ConfigService) {
+  constructor(private readonly configService: ConfigService) {
     this.apiUrl = this.configService.get<string>('API_URL');
     this.apiKey = this.configService.get<string>('API_KEY');
     this.campaign = this.configService.get<string>('CAMPAIGN');
@@ -22,7 +23,7 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<LoginResponse> {
     try {
       const response = await axios.post<LoginResponse>(
-        `${this.apiUrl}/sessions/login`,
+        `${this.apiUrl}/microsite/sessions/login`,
         {
           api_key: this.apiKey,
           campaign: this.campaign,
@@ -48,10 +49,11 @@ export class AuthService {
       }
     }
   }
+
   async logout(logoutDto: LogoutDto): Promise<LogoutResponse> {
     try {
       const response = await axios.post<LogoutResponse>(
-        `${this.apiUrl}/sessions/logout`,
+        `${this.apiUrl}/microsite/sessions/logout`,
         null,
         {
           headers: {
@@ -72,6 +74,35 @@ export class AuthService {
       }
       throw new HttpException(
         'Error desconocido',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async register(registerDto: RegisterDto): Promise<RegisterResponse> {
+    const payload = {
+      api_key: this.apiKey,
+      campaign: this.campaign,
+      properties: {
+        ...registerDto,
+      },
+    };
+
+    try {
+      const response = await axios.post<RegisterResponse>(
+        `${this.apiUrl}/participants`,
+        payload,
+      );
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        throw new HttpException(
+          error.response.data,
+          error.response.status || HttpStatus.BAD_REQUEST,
+        );
+      }
+      throw new HttpException(
+        'Ocurrió un error al realizar la solicitud',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
