@@ -142,7 +142,6 @@ export class AuthService {
     dto: GetParticipantDto,
   ): Promise<GetParticipantResponse> {
     try {
-      console.log(dto);
       const response = await axios.request<GetParticipantResponse>({
         method: 'GET',
         url: `${this.apiUrl}/participants/info`,
@@ -166,6 +165,42 @@ export class AuthService {
       }
       throw new HttpException(
         'Error inesperado al realizar la solicitud',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async loginInfo(loginDto: LoginDto): Promise<any> {
+    try {
+      const loginResponse: LoginResponse = await this.login(loginDto);
+
+      if (!loginResponse.ok) {
+        throw new HttpException(
+          'Error en el inicio de sesión',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      const getParticipantDto: GetParticipantDto = {
+        campaign: this.campaign,
+        distinct_id: loginDto.numero_de_documento,
+      };
+      const participantResponse = await this.getParticipant(getParticipantDto);
+
+      const combinedResponse = {
+        ok: loginResponse.ok,
+        token: loginResponse.token,
+        User: participantResponse.object,
+        message: loginResponse.message,
+      };
+
+      return combinedResponse;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Error inesperado en loginInfo',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

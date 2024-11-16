@@ -6,8 +6,6 @@ import {
   HttpStatus,
   Body,
   HttpException,
-  Query,
-  Get,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -59,5 +57,10 @@ export class AuthController {
     @Body() body: GetParticipantDto,
   ): Promise<GetParticipantResponse> {
     return await this.authService.getParticipant(body);
+  }
+
+  @Post('login-info')
+  async loginInfo(@Body() loginDto: LoginDto): Promise<any> {
+    return this.authService.loginInfo(loginDto);
   }
 }
