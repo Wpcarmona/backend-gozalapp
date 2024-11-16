@@ -115,14 +115,28 @@ export class AuthService {
     data: UpdateParticipantDto,
   ): Promise<UpdateParticipantResponse> {
     try {
+      if (!data.properties || Object.keys(data.properties).length === 0) {
+        throw new HttpException(
+          'El campo properties no puede estar vacío',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const requestBody = {
+        api_key: this.apiKey,
+        campaign: this.campaign,
+        distinct_id: data.distinct_id,
+        properties: data.properties,
+      };
+
       const response = await axios.post<UpdateParticipantResponse>(
         `${this.apiUrl}/participants/update`,
+        requestBody,
         {
-          api_key: this.apiKey,
-          campaign: this.campaign,
-          ...data,
+          headers: { 'api-key': this.apiKey },
         },
       );
+
       return response.data;
     } catch (error) {
       if (error.response) {

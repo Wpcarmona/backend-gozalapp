@@ -49,6 +49,15 @@ export class AuthController {
   async updateParticipant(
     @Body() updateParticipantDto: UpdateParticipantDto,
   ): Promise<UpdateParticipantResponse> {
+    if (
+      !updateParticipantDto.properties ||
+      Object.keys(updateParticipantDto.properties).length === 0
+    ) {
+      throw new HttpException(
+        'El campo properties no puede estar vacío',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     return this.authService.updateParticipant(updateParticipantDto);
   }
 
