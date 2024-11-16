@@ -142,18 +142,19 @@ export class AuthService {
     dto: GetParticipantDto,
   ): Promise<GetParticipantResponse> {
     try {
-      const response = await axios.get<GetParticipantResponse>(
-        `${this.apiUrl}/participants/info`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-          },
-          params: {
-            campaign: dto.campaign,
-            distinct_id: dto.distinct_id,
-          },
+      console.log(dto);
+      const response = await axios.request<GetParticipantResponse>({
+        method: 'GET',
+        url: `${this.apiUrl}/participants/info`,
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
         },
-      );
+        data: {
+          campaign: dto.campaign,
+          distinct_id: dto.distinct_id,
+        },
+      });
 
       return response.data;
     } catch (error) {

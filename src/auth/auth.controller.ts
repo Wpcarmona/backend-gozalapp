@@ -54,10 +54,10 @@ export class AuthController {
     return this.authService.updateParticipant(updateParticipantDto);
   }
 
-  @Get('info')
+  @Post('info')
   async getParticipant(
-    @Query() query: GetParticipantDto,
+    @Body() body: GetParticipantDto,
   ): Promise<GetParticipantResponse> {
-    return await this.authService.getParticipant(query);
+    return await this.authService.getParticipant(body);
   }
 }
