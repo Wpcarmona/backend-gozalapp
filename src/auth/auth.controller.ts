@@ -17,6 +17,14 @@ import { UpdateParticipantDto } from './dto/updateParticipant.dto';
 import { UpdateParticipantResponse } from './interfaces/updateParticipant.interface';
 import { GetParticipantDto } from './dto/getParticipant.dto';
 import { GetParticipantResponse } from './interfaces/getParticipant-response.interface';
+import { SendVerifyPhoneResponse } from './interfaces/send-verify-phone-response.interface';
+import { SendVerifyPhoneDto } from './dto/send-verify-phone.dto';
+import { VerifyPhoneDto } from './dto/verify-phone.dto';
+import { VerifyPhoneResponse } from './interfaces/verify-phone-response.interface';
+import { SendVerifyEmailDto } from './dto/send-verify-email.dto';
+import { SendVerifyEmailResponse } from './interfaces/send-verify-email-response.interface';
+import { VerifyEmailDto } from './dto/verify-email.dto';
+import { VerifyEmailResponse } from './interfaces/verify-email-response.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -71,5 +79,40 @@ export class AuthController {
   @Post('login-info')
   async loginInfo(@Body() loginDto: LoginDto): Promise<any> {
     return this.authService.loginInfo(loginDto);
+  }
+
+  @Post('register-and-login')
+  async registerAndLogin(
+    @Body() registerDto: RegisterDto,
+  ): Promise<LoginResponse> {
+    return this.authService.registerAndLogin(registerDto);
+  }
+
+  @Post('send-verify-phone')
+  async sendVerifyPhone(
+    @Body() sendVerifyPhoneDto: SendVerifyPhoneDto,
+  ): Promise<SendVerifyPhoneResponse> {
+    return this.authService.sendVerifyPhone(sendVerifyPhoneDto);
+  }
+
+  @Post('verify-phone')
+  async verifyPhone(
+    @Body() verifyPhoneDto: VerifyPhoneDto,
+  ): Promise<VerifyPhoneResponse> {
+    return this.authService.verifyPhone(verifyPhoneDto);
+  }
+
+  @Post('send-verify-email')
+  async sendVerifyEmail(
+    @Body() sendVerifyEmailDto: SendVerifyEmailDto,
+  ): Promise<SendVerifyEmailResponse> {
+    return this.authService.sendVerifyEmail(sendVerifyEmailDto);
+  }
+
+  @Post('verify-email')
+  async verifyEmail(
+    @Body() verifyEmailDto: VerifyEmailDto,
+  ): Promise<VerifyEmailResponse> {
+    return this.authService.verifyEmail(verifyEmailDto);
   }
 }
