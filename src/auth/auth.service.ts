@@ -387,4 +387,69 @@ export class AuthService {
       );
     }
   }
+  async registerAndSendVerifyPhone(registerDto: RegisterDto): Promise<any> {
+    try {
+      const registerResponse: RegisterResponse =
+        await this.register(registerDto);
+
+      if (!registerResponse.ok) {
+        throw new HttpException(
+          'El registro no fue exitoso.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const sendVerifyPhoneDto: SendVerifyPhoneDto = {
+        distinct_id: registerDto.numero_de_documento,
+      };
+
+      const sendVerifyPhoneResponse: SendVerifyPhoneResponse =
+        await this.sendVerifyPhone(sendVerifyPhoneDto);
+
+      return {
+        register: registerResponse,
+        sendVerifyPhone: sendVerifyPhoneResponse,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Error inesperado en registerAndSendVerifyPhone',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async verifyPhoneAndLogin(
+    data: VerifyPhoneDto & { password: string },
+  ): Promise<any> {
+    try {
+      const verifyPhoneResponse: VerifyPhoneResponse = await this.verifyPhone({
+        distinct_id: data.distinct_id,
+        code: data.code,
+      });
+
+      if (!verifyPhoneResponse.ok) {
+        throw new HttpException(
+          verifyPhoneResponse.message || 'La verificación de teléfono falló',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const loginDto: LoginDto = {
+        numero_de_documento: data.distinct_id,
+        password: data.password,
+      };
+
+      return await this.loginInfo(loginDto);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Error inesperado en verifyPhoneAndLogin',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

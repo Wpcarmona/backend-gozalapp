@@ -88,6 +88,20 @@ export class AuthController {
     return this.authService.registerAndLogin(registerDto);
   }
 
+  @Post('register-verify-phone')
+  async registerAndVerifyPhone(
+    @Body() registerDto: RegisterDto,
+  ): Promise<LoginResponse> {
+    return this.authService.registerAndSendVerifyPhone(registerDto);
+  }
+
+  @Post('verify-phone-and-login')
+  async verifyPhoneAndLogin(
+    @Body() body: VerifyPhoneDto & { password: string },
+  ): Promise<any> {
+    return this.authService.verifyPhoneAndLogin(body);
+  }
+
   @Post('send-verify-phone')
   async sendVerifyPhone(
     @Body() sendVerifyPhoneDto: SendVerifyPhoneDto,
