@@ -175,7 +175,7 @@ export class AuthService {
           'Content-Type': 'application/json',
         },
         data: {
-          campaign: dto.campaign,
+          campaign: this.campaign,
           distinct_id: dto.distinct_id,
         },
       });
@@ -409,6 +409,7 @@ export class AuthService {
       return {
         register: registerResponse,
         sendVerifyPhone: sendVerifyPhoneResponse,
+        codeAuthRegister: this.authCodeRegister,
       };
     } catch (error) {
       if (error instanceof HttpException) {
